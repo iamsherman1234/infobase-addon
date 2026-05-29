@@ -97,7 +97,7 @@ builder.defineCatalogHandler(async ({ type, id, extra }) => {
 
   // Return basic metas (no IMDB lookup for catalog, too slow)
   const metas = filtered.slice(0, 100).map((m, i) => ({
-    id: `infobase:${i}`,
+    id: `movie:${i}`,
     type: 'movie',
     name: m.title,
     year: m.year || '',
@@ -115,14 +115,14 @@ builder.defineStreamHandler(async ({ type, id }) => {
   const movies = await getMovies();
 
   // If infobase internal id
-  if (id.startsWith('infobase:')) {
+  if (id.startsWith('movie:')) {
     const index = parseInt(id.split(':')[1]);
     const movie = movies[index];
     if (!movie) return { streams: [] };
     return {
       streams: [{
         url: movie.url,
-        title: `Infobase\n${movie.filename}`,
+        title: `${movie.server === 'fmftp' ? 'FmFtp' : 'Infobase'}\n${movie.filename}`,
         behaviorHints: { notWebReady: false }
       }]
     };
