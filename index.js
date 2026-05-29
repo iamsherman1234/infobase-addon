@@ -96,8 +96,8 @@ builder.defineCatalogHandler(async ({ type, id, extra }) => {
   }
 
   // Return basic metas (no IMDB lookup for catalog, too slow)
-  const metas = filtered.slice(0, 100).map((m, i) => ({
-    id: `movie:${i}`,
+  const metas = filtered.slice(0, 100).map((m) => ({
+    id: `movie:${movieList.indexOf(m)}`,
     type: 'movie',
     name: m.title,
     year: m.year || '',
