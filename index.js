@@ -5,7 +5,7 @@ const path = require('path');
 const { crawl } = require('./crawler');
 
 const CACHE_FILE = path.join(__dirname, 'cache.json');
-const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 6 hours
 const PORT = process.env.PORT || 7050;
 
 const manifest = {
