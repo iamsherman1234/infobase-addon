@@ -132,19 +132,22 @@ builder.defineStreamHandler(async ({ type, id }) => {
   if (id.startsWith('tt')) {
     try {
       const meta = await axios.get(`https://v3-cinemeta.strem.io/meta/movie/${id}.json`, { timeout: 8000 });
-      const name = meta.data.meta.name.toLowerCase();
+      const name = meta.data.meta.name.toLowerCase().trim();
       const year = meta.data.meta.releaseInfo;
-      const match = movies.find(m =>
-        m.title.toLowerCase().includes(name) ||
-        name.includes(m.title.toLowerCase())
-      );
-      if (match) {
+      const matches = movies.filter(m => {
+        const t = m.title.toLowerCase().trim();
+        return t === name || t === name.replace(/[^a-z0-9 ]/gi, '');
+      });
+      const best = matches.filter(m => m.year && year && m.year === year);
+      const noYear = matches.filter(m => !m.year);
+      const results = best.length > 0 ? [...best, ...noYear] : matches;
+      if (results.length > 0) {
         return {
-          streams: [{
-            url: match.url,
-            title: `Infobase\n${match.filename}`,
+          streams: results.map(m => ({
+            url: m.url,
+            title: `${m.server === 'fmftp' ? 'FmFtp' : 'Infobase'}\n${m.filename}`,
             behaviorHints: { notWebReady: false }
-          }]
+          }))
         };
       }
     } catch (e) {
