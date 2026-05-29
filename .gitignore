@@ -5,3 +5,4 @@ cache.json
 /var/log/infobase-recrawl.log
 progress-*.json
 .env
+dev/
