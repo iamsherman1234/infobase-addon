@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 const axios = require('axios');
 const fs = require('fs');
@@ -7,6 +8,11 @@ const { crawl } = require('./crawler');
 const CACHE_FILE = path.join(__dirname, 'cache.json');
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 6 hours
 const PORT = process.env.PORT || 7050;
+const PROXY_URL = process.env.PROXY_URL || 'https://proxy.sudolocal.qzz.io';
+const PROXY_PASSWORD = process.env.PROXY_PASSWORD || process.env.PROXY_PASSWORD || '';
+function proxyStream(url) {
+  return `${PROXY_URL}/proxy/stream?url=${encodeURIComponent(url)}&api_password=${PROXY_PASSWORD}`;
+}
 
 const manifest = {
   id: 'org.infobase.movies',
@@ -144,7 +150,7 @@ builder.defineStreamHandler(async ({ type, id }) => {
       if (results.length > 0) {
         return {
           streams: results.map(m => ({
-            url: m.url,
+            url: proxyStream(m.url),
             title: `${m.server === 'fmftp' ? 'FmFtp' : 'Infobase'}\n${m.filename}`,
             behaviorHints: { notWebReady: false }
           }))
